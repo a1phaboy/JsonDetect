@@ -63,7 +63,7 @@ public class JsonScan implements ScanTask{
         String errResp =  new String(doReq.getResponse());
         int pos = errResp.indexOf("fastjson-version");
         if( pos != -1){
-            result =  "[*]" + new String(Arrays.copyOfRange(doReq.getResponse(),pos,pos+23));
+            result =  "[*]" + new String(Arrays.copyOfRange(doReq.getResponse(),pos,pos+23)) + " ｜ ";
         }
 
         //DNS探测
