@@ -3,8 +3,10 @@
 支持被动扫描json，根据不同json库的特性识别出相应的json依赖库  
 如果请求包body中含有json会高亮  
 ![img.png](images/p1.jpg)  
+  
 插件会进行被动扫描  
-![img.png](images/p2.jpg)      
+![img.png](images/p2.jpg)  
+  
 结果会输出至JsonDetect面板  
 ![img.png](images/p3.jpg)  
 
