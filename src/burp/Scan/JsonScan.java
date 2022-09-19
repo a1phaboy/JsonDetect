@@ -17,7 +17,8 @@ public class JsonScan implements ScanTask{
     private static IExtensionHelpers helpers;
     private static String dnsurl;
     private static String result;
-    private HashMap<String,byte[]> payloadMap;
+    private HashMap<String,byte[]> fastjsonPayloadMap;
+    private HashMap<String,byte[]> orgjsonPayloadMap;
 
 
     public JsonScan(IBurpExtenderCallbacks callbacks, IHttpRequestResponse requestResponse, YamlReader yamlReader) throws InterruptedException {
@@ -26,7 +27,8 @@ public class JsonScan implements ScanTask{
         JsonScan.yamlReader = yamlReader;
         JsonScan.burpCollaboratorClient = callbacks.createBurpCollaboratorClientContext();
         JsonScan.helpers = callbacks.getHelpers();
-        payloadMap = new HashMap<>();
+        fastjsonPayloadMap = new HashMap<>();
+        orgjsonPayloadMap = new HashMap<>();
         JsonScan.dnsurl = this.initPayloadMap();
         JsonScan.result = "";
         this.doScan();
@@ -37,6 +39,9 @@ public class JsonScan implements ScanTask{
         //获取DNS payload
         String dnsurl = burpCollaboratorClient.generatePayload(true);
 
+        /*
+         * fastjson detect
+         */
         byte[] errDetect = yamlReader.getString("application.fastjson.payloads.errDetect").getBytes();
         byte[] netDetect = String.format(yamlReader.getString("application.fastjson.payloads.netDetect"),dnsurl).getBytes();
         byte[] autoTypeDetect = String.format(yamlReader.getString("application.fastjson.payloads.autoTypeDetect"),dnsurl).getBytes();
@@ -44,12 +49,19 @@ public class JsonScan implements ScanTask{
         byte[] dnsDetect68 = String.format(yamlReader.getString("application.fastjson.payloads.dnsDetect68"),dnsurl).getBytes();
         byte[] desDetect80 = String.format(yamlReader.getString("application.fastjson.payloads.desDetect80"),dnsurl,dnsurl).getBytes();
 
-        payloadMap.put("errDetect",Arrays.copyOfRange(errDetect,1,errDetect.length-1));
-        payloadMap.put("netDetect",Arrays.copyOfRange(netDetect,1,netDetect.length-1));
-        payloadMap.put("autoTypeDetect",Arrays.copyOfRange(autoTypeDetect,1,autoTypeDetect.length-1));
-        payloadMap.put("dnsDetect48",Arrays.copyOfRange(dnsDetect48,1,dnsDetect48.length-1));
-        payloadMap.put("dnsDetect68",Arrays.copyOfRange(dnsDetect68,1,dnsDetect68.length-1));
-        payloadMap.put("dnsDetect80",Arrays.copyOfRange(desDetect80,1,desDetect80.length-1));
+        fastjsonPayloadMap.put("errDetect",Arrays.copyOfRange(errDetect,1,errDetect.length-1));
+        fastjsonPayloadMap.put("netDetect",Arrays.copyOfRange(netDetect,1,netDetect.length-1));
+        fastjsonPayloadMap.put("autoTypeDetect",Arrays.copyOfRange(autoTypeDetect,1,autoTypeDetect.length-1));
+        fastjsonPayloadMap.put("dnsDetect48",Arrays.copyOfRange(dnsDetect48,1,dnsDetect48.length-1));
+        fastjsonPayloadMap.put("dnsDetect68",Arrays.copyOfRange(dnsDetect68,1,dnsDetect68.length-1));
+        fastjsonPayloadMap.put("dnsDetect80",Arrays.copyOfRange(desDetect80,1,desDetect80.length-1));
+
+        /*
+         * org.fastjson detect
+         */
+        byte[] orgjsonDetect = String.format(yamlReader.getString("application.orgjson.payloads.errDetect"),dnsurl,dnsurl).getBytes();
+        orgjsonPayloadMap.put("errDetect",Arrays.copyOfRange(orgjsonDetect,1,orgjsonDetect.length-1));
+
 
         return dnsurl;
     }
@@ -58,7 +70,7 @@ public class JsonScan implements ScanTask{
     @Override
     public void doScan() throws InterruptedException {
         //报错探测
-        byte[] errDetectReq = rebuildReq(requestResponse,payloadMap.get("errDetect"));
+        byte[] errDetectReq = rebuildReq(requestResponse,fastjsonPayloadMap.get("errDetect"));
         IHttpRequestResponse doReq = callbacks.makeHttpRequest(requestResponse.getHttpService(), errDetectReq);
         String errResp =  new String(doReq.getResponse());
         int pos = errResp.indexOf("fastjson-version");
@@ -130,9 +142,17 @@ public class JsonScan implements ScanTask{
                  * 这里可以判断各类的json依赖库
                  * ===== 施工中 =====
                  */
+                errDetectReq = rebuildReq(requestResponse,orgjsonPayloadMap.get("errDetect"));
+                doReq = callbacks.makeHttpRequest(requestResponse.getHttpService(), errDetectReq);
+                errResp =  new String(doReq.getResponse());
+                pos = errResp.indexOf("org.json");
+                if( pos != -1){
+                    result =  "[+] org.json ";
+                }
+
                 pos = errResp.indexOf("jackson");
                 if( pos != -1){
-                    result =  "jackson";
+                    result =  "[+] jackson";
                     return ;
                 }
                 result = "[-]未检测出json库";
@@ -159,10 +179,10 @@ public class JsonScan implements ScanTask{
     }
 
     public HashMap<String,byte[]> getPayloadMap(){
-        return this.payloadMap;
+        return this.fastjsonPayloadMap;
     }
     public void sendDnsPayload(String type) throws InterruptedException {
-        byte[] Detect = rebuildReq(requestResponse,payloadMap.get(type));
+        byte[] Detect = rebuildReq(requestResponse,fastjsonPayloadMap.get(type));
         callbacks.makeHttpRequest(requestResponse.getHttpService(), Detect);
         Thread.sleep(5000);
     }

