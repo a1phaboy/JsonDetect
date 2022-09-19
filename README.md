@@ -1,3 +1,4 @@
+![](https://socialify.git.ci/a1phaboy/JsonDetect/image?description=1&font=Rokkitt&language=1&name=1&owner=1&pattern=Circuit%20Board&stargazers=1&theme=Light)
 # JsonDetect
 [FastjsonScan](https://github.com/a1phaboy/FastjsonScan) 移植burp插件  
 支持被动扫描json，根据不同json库的特性识别出相应的json依赖库  
