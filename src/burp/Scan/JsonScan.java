@@ -4,10 +4,7 @@ import burp.*;
 import burp.Bootstrap.YamlReader;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class JsonScan implements ScanTask{
     private static IBurpExtenderCallbacks callbacks;
@@ -108,9 +105,22 @@ public class JsonScan implements ScanTask{
                 return ;
             }
             //判断fastjson版本
-            sendDnsPayload("dnsDetect48");
-            sendDnsPayload("dnsDetect68");
-            sendDnsPayload("dnsDetect80");
+            String errresult;
+            errresult = sendDnsPayload("dnsDetect48");
+            if(!errresult.equals("")){
+                result = errresult + (autoType?" autoType On":" autoType Off");
+                return ;
+            }
+            errresult = sendDnsPayload("dnsDetect68");
+            if(!errresult.equals("")){
+                result = errresult + (autoType?" autoType On":" autoType Off");
+                return ;
+            }
+            errresult = sendDnsPayload("dnsDetect80");
+            if(!errresult.equals("")){
+                result = errresult + (autoType?" autoType On":" autoType Off");
+                return ;
+            }
             for(IBurpCollaboratorInteraction dnslog : burpCollaboratorClient.fetchCollaboratorInteractionsFor(getDnsurl())){
                 String de_dnslog = new String(Base64.getDecoder().decode(dnslog.getProperty("raw_query")), StandardCharsets.UTF_8);
                 if(de_dnslog.contains("48_")){
@@ -181,9 +191,19 @@ public class JsonScan implements ScanTask{
     public HashMap<String,byte[]> getPayloadMap(){
         return this.fastjsonPayloadMap;
     }
-    public void sendDnsPayload(String type) throws InterruptedException {
+    public String sendDnsPayload(String type) throws InterruptedException {
         byte[] Detect = rebuildReq(requestResponse,fastjsonPayloadMap.get(type));
-        callbacks.makeHttpRequest(requestResponse.getHttpService(), Detect);
-        Thread.sleep(5000);
+        IHttpRequestResponse doReq = callbacks.makeHttpRequest(requestResponse.getHttpService(), Detect);
+        String errResp =  new String(doReq.getResponse());
+        int pos = errResp.indexOf("fastjson-version");
+        if( pos != -1){
+            result =  "[*]" + new String(Arrays.copyOfRange(doReq.getResponse(),pos,pos+23)) + " ｜ ";
+            return result;
+        }else{
+            Thread.sleep(5000);
+            return "";
+        }
+
+
     }
 }
